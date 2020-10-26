@@ -11,13 +11,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.io.FileNotFoundException;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.*;
+
+import static com.bonial.task.exception.ExceptionErrorCode.*;
 
 @Service
 public class LocationService {
@@ -37,7 +38,7 @@ public class LocationService {
     @Autowired
     private ObjectMapper objectMapper;
 
-    public LocationResponse searchLocations(int x, int y) {
+    public LocationResponse searchLocations(int x, int y) throws BusinessException {
         Coordinate userLocation = new Coordinate(x, y);
         Map<Integer, Double> restaurantDistanceMap = getNearByRestaurantLocations(userLocation);
         Map<Integer, Restaurant> restaurantsMap = fileResourceService.readRestaurantsData();
@@ -72,7 +73,7 @@ public class LocationService {
         );
     }
 
-    private List<Location> getLocationsData(Map<Integer, Double> restaurantDistanceMap, Map<Integer, Restaurant> restaurantsMap) {
+    private List<Location> getLocationsData(Map<Integer, Double> restaurantDistanceMap, Map<Integer, Restaurant> restaurantsMap) throws BusinessException {
         List<Location> locations = new ArrayList<>();
         DecimalFormat decimalFormat = new DecimalFormat(DECIMAL_FORMAT);
         decimalFormat.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ENGLISH));
@@ -85,7 +86,7 @@ public class LocationService {
             locations.sort(Comparator.comparing(Location::getDistance).reversed());
             return locations;
         } catch (Exception ex) {
-            throw new BusinessException("Decimal Number Parsing Error", HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new BusinessException(DECIMAL_PARSING_ERROR,ex);
         }
     }
 
@@ -101,14 +102,14 @@ public class LocationService {
         return location;
     }
 
-    public Restaurant getRestaurant(String id) {
+    public Restaurant getRestaurant(String id) throws BusinessException {
         try {
             Resource resource = resourceLoader.getResource(RESTAURANT_JSON_OBJECTS_DIRECTORY +id +FILE_EXTENSION);
             return objectMapper.readValue(resource.getInputStream(),Restaurant.class);
         } catch (FileNotFoundException ex) {
-            throw new BusinessException("Restaurant does not exist with Id : " + id, HttpStatus.NOT_FOUND);
+            throw new BusinessException(ENTITY_NOT_FOUND, ex);
         } catch (Exception ex) {
-            throw new BusinessException("Incorrecet JSON restaurant object mapping", HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new BusinessException(JSON_MAPPING_ERROR, ex);
         }
     }
 }

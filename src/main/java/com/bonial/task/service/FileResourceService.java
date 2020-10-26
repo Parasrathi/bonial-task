@@ -9,11 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.ResourcePatternUtils;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.bonial.task.exception.ExceptionErrorCode.*;
 
 @Service
 public class FileResourceService {
@@ -27,7 +28,7 @@ public class FileResourceService {
 
     public static final String RESTAURANT_JSON_OBJECTS_PATH = "classpath:templates/*.json";
 
-    public Map<Integer, Restaurant> readRestaurantsData() {
+    public Map<Integer, Restaurant> readRestaurantsData() throws BusinessException {
         try {
             Map<Integer, Restaurant> restaurantsMap = new HashMap<>();
             Resource[] resources = ResourcePatternUtils.getResourcePatternResolver(resourceLoader).getResources(RESTAURANT_JSON_OBJECTS_PATH);
@@ -39,10 +40,10 @@ public class FileResourceService {
                 }
                 return restaurantsMap;
             } else {
-                throw new BusinessException("Restaurant JSON Objects not found", HttpStatus.INTERNAL_SERVER_ERROR);
+                throw new BusinessException(JSON_OBJECTS_NOT_FOUND);
             }
         } catch (Exception ex) {
-            throw new BusinessException("Incorrect JSON restaurant objects mapping", HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new BusinessException(JSON_MAPPING_ERROR, ex);
         }
     }
 }

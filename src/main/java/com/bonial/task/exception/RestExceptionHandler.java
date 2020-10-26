@@ -1,5 +1,6 @@
 package com.bonial.task.exception;
 
+import com.bonial.task.model.ErrorResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.Ordered;
@@ -19,7 +20,9 @@ public class RestExceptionHandler {
 
     @ResponseBody
     @ExceptionHandler(BusinessException.class)
-    public ResponseEntity handleCustomException(BusinessException bex, HttpServletRequest request) {
-        return new ResponseEntity(bex.getMessage(),bex.getStatusCode());
+    public ResponseEntity<ErrorResponse> handleCustomException(BusinessException bex, HttpServletRequest request) {
+        ErrorResponse errorResponse = new ErrorResponse(bex.getError().getCode(),
+                                            bex.getError().getDescription(), bex.getError().getStatus().value());
+        return new ResponseEntity<>(errorResponse, bex.getError().getStatus());
     }
 }

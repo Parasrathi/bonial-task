@@ -1,5 +1,6 @@
 package com.bonial.task.controller;
 
+import com.bonial.task.exception.BusinessException;
 import com.bonial.task.model.LocationResponse;
 import com.bonial.task.model.Restaurant;
 import com.bonial.task.service.LocationService;
@@ -20,7 +21,7 @@ public class LocationController {
     private LocationService locationService;
 
     @GetMapping("/search_locations")
-    public LocationResponse searchLocations(@RequestParam(name = "x") int x, @RequestParam(name = "y") int y) {
+    public LocationResponse searchLocations(@RequestParam(name = "x") int x, @RequestParam(name = "y") int y) throws BusinessException {
         logger.info("Processing Request");
         LocationResponse response = locationService.searchLocations(x,y);
         logger.info("Response Returned");
@@ -28,7 +29,7 @@ public class LocationController {
     }
 
     @GetMapping("/location/{id}")
-    public Restaurant getRestaurant(@PathVariable("id") String id) {
+    public Restaurant getRestaurant(@PathVariable("id") String id) throws BusinessException {
         logger.info("Processing Request");
         Restaurant response = locationService.getRestaurant(id);
         logger.info("Response Returned");

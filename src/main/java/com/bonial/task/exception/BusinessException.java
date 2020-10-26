@@ -1,28 +1,26 @@
 package com.bonial.task.exception;
 
-import org.springframework.http.HttpStatus;
+public class BusinessException extends Exception {
 
-public class BusinessException extends RuntimeException {
+    private final Exception exception;
+    private final ExceptionErrorCode error;
 
-    private final RuntimeException runtimeException;
-    private final HttpStatus statusCode;
-
-    public BusinessException(String message, HttpStatus statusCode) {
-        super(message);
-        this.statusCode = statusCode;
-        runtimeException = null;
-    }
-    public BusinessException(RuntimeException runtimeException, String message, HttpStatus errorCode) {
-        super(message);
-        this.statusCode = errorCode;
-        this.runtimeException = runtimeException;
+    public BusinessException(ExceptionErrorCode error, Exception exception) {
+        super(error.getDescription());
+        this.exception = exception;
+        this.error = error;
     }
 
-    public RuntimeException getRuntimeException() {
-        return runtimeException;
+    public BusinessException(ExceptionErrorCode error) {
+        this.exception = null;
+        this.error = error;
     }
 
-    public HttpStatus getStatusCode() {
-        return statusCode;
+    public Exception getException() {
+        return exception;
+    }
+
+    public ExceptionErrorCode getError() {
+        return error;
     }
 }
