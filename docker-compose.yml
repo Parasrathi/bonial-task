@@ -1,0 +1,13 @@
+version: '3'
+
+services:
+  bonial-task-service:
+    image: bonial-task-service:4
+    container_name: task-container-4
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    volumes:
+      - /data/bonial-task-service
+    ports:
+      - "8080:8080"
