@@ -71,8 +71,9 @@ public class LocationServiceTest {
     public void getRestaurant() throws BusinessException, IOException {
         String id = "19e1545c-8b65-4d83-82f9-7fcad4a23114";
         Resource mockResource = Mockito.mock(Resource.class);
+        InputStream inputStream = Mockito.mock(InputStream.class);
         lenient().when(resourceLoader.getResource(Mockito.anyString())).thenReturn(mockResource);
-        lenient().when(resourceLoader.getResource(Mockito.anyString()).getInputStream()).thenReturn(readInputStream(id));
+        lenient().when(resourceLoader.getResource(Mockito.anyString()).getInputStream()).thenReturn(inputStream);
         lenient().when(objectMapper.readValue((InputStream) Mockito.any(), Mockito.eq(Restaurant.class))).thenReturn(getRestaurantObject());
         Restaurant restaurant = locationServices.getRestaurant(id);
         assert (restaurant) != null;
@@ -83,9 +84,10 @@ public class LocationServiceTest {
     public void getRestaurantbyInvalidId() throws IOException {
         String id = "123";
         Resource mockResource = Mockito.mock(Resource.class);
+        InputStream inputStream = Mockito.mock(InputStream.class);
         try {
             lenient().when(resourceLoader.getResource(Mockito.anyString())).thenReturn(mockResource);
-            lenient().when(resourceLoader.getResource(Mockito.anyString()).getInputStream()).thenReturn(readInputStream(id));
+            lenient().when(resourceLoader.getResource(Mockito.anyString()).getInputStream()).thenReturn(inputStream);
             lenient().when(objectMapper.readValue((InputStream) Mockito.any(), Mockito.eq(Restaurant.class))).thenReturn(null);
             Restaurant restaurant = locationServices.getRestaurant(id);
             assert (restaurant) == null;
@@ -111,9 +113,4 @@ public class LocationServiceTest {
         restaurant.setCoordinate("x=2,y=2");
         return  restaurant;
     }
-
-    private InputStream readInputStream(String id) {
-        return this.getClass().getResourceAsStream("/templates/" + id + ".json");
-    }
-
 }
